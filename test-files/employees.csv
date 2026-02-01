@@ -1,9 +1,0 @@
-employee_id,first_name,last_name,email,department
-EMP001,John,Smith,john.smith@acme.com,Engineering
-EMP002,Jane,Doe,jane.doe@acme.com,Marketing
-EMP003,Bob,Wilson,bob.wilson@acme.com,Sales
-EMP004,Alice,Johnson,alice.johnson@acme.com,Engineering
-EMP005,Charlie,Brown,charlie.brown@acme.com,Finance
-EMP006,Diana,Lee,diana.lee@acme.com,HR
-EMP007,Edward,Garcia,edward.garcia@acme.com,Engineering
-EMP008,Fiona,Martinez,fiona.martinez@acme.com,Marketing

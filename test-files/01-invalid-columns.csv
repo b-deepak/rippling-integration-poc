@@ -1,4 +1,0 @@
-id,name,email,department
-1,John,john@test.com,Engineering
-2,Jane,jane@test.com
-3,Bob,bob@test.com,Sales,ExtraColumn

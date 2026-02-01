@@ -1,0 +1,26 @@
+id,worker_id,amount,currency,expense_date,category,description,merchant,status,reimbursable
+EX001,W001,125.50,USD,2024-01-15,travel,Flight to NYC,Delta Airlines,APPROVED,true
+EX002,W002,45.00,USD,2024-01-15,meals,Client lunch,Downtown Grill,APPROVED,true
+EX003,W003,89.99,USD,2024-01-16,supplies,Office supplies,Staples,PENDING,true
+EX004,W001,250.00,USD,2024-01-17,travel,Hotel accommodation,Marriott,APPROVED,true
+EX005,W004,32.50,USD,2024-01-17,meals,Team dinner,Italian Place,APPROVED,true
+EX006,W002,150.00,USD,2024-01-18,training,Online course,Udemy,APPROVED,true
+EX007,W005,75.00,USD,2024-01-18,software,Monthly license,Adobe,APPROVED,true
+EX008,W003,200.00,USD,2024-01-19,equipment,External monitor,Best Buy,PENDING,true
+EX009,W004,55.00,USD,2024-01-19,meals,Working lunch,Cafe Express,APPROVED,true
+EX010,W005,180.00,USD,2024-01-20,travel,Train tickets,Amtrak,APPROVED,true
+EX011,W006,95.00,USD,2024-01-20,supplies,Printer ink,Office Depot,APPROVED,true
+EX012,W007,120.00,USD,2024-01-21,travel,Taxi fare,Uber,APPROVED,true
+EX013,W008,65.00,USD,2024-01-21,meals,Client dinner,Steakhouse,APPROVED,true
+EX014,W009,300.00,USD,2024-01-22,equipment,Keyboard and mouse,Amazon,PENDING,true
+EX015,W010,45.00,USD,2024-01-22,supplies,Notebooks,Target,APPROVED,true
+EX016,W001,85.00,USD,2024-01-23,meals,Team lunch,Thai Kitchen,APPROVED,true
+EX017,W002,220.00,USD,2024-01-23,travel,Flight to Boston,JetBlue,APPROVED,true
+EX018,W003,35.00,USD,2024-01-24,supplies,Pens and markers,Staples,APPROVED,true
+EX019,W004,175.00,USD,2024-01-24,training,Conference fee,TechConf,APPROVED,true
+EX020,W005,90.00,USD,2024-01-25,software,Plugin license,JetBrains,APPROVED,true
+EX021,W006,110.00,USD,2024-01-25,meals,Client meeting,French Bistro,APPROVED,true
+EX022,W007,450.00,USD,2024-01-26,travel,Hotel Boston,Hilton,APPROVED,true
+EX023,W008,28.00,USD,2024-01-26,supplies,Paper,Office Depot,APPROVED,true
+EX024,W009,95.00,USD,2024-01-27,meals,Working dinner,Sushi Bar,REJECTED,true
+EX025,W010,160.00,USD,2024-01-27,equipment,Webcam,Logitech,APPROVED,true

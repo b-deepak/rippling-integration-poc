@@ -1,0 +1,9 @@
+id,work_email,start_date,status,department_id,title,manager_id,country
+W001,john.smith@acme.com,2024-01-15,ACTIVE,D001,Software Engineer,W010,US
+W002,jane.doe@acme.com,2024-01-16,ACTIVE,D002,Marketing Manager,W011,US
+W003,bob.wilson@acme.com,2024-02-01,ACTIVE,D003,Sales Rep,W012,US
+W004,alice.johnson@acme.com,2024-02-15,ACTIVE,D001,Senior Engineer,W010,CA
+W005,charlie.brown@acme.com,2024-03-01,ACTIVE,D004,Finance Analyst,W013,US
+W006,diana.lee@acme.com,2024-03-15,ACTIVE,D005,HR Specialist,W014,US
+W007,edward.garcia@acme.com,2024-04-01,ACTIVE,D001,DevOps Engineer,W010,MX
+W008,fiona.martinez@acme.com,2024-04-15,ACTIVE,D002,Content Writer,W011,US

@@ -1,9 +1,0 @@
-employee_id,date,amount,category,description
-EMP001,2024-01-15,125.50,travel,Flight to NYC for client meeting
-EMP002,2024-01-15,45.00,meals,Client lunch at downtown restaurant
-EMP003,2024-01-16,89.99,supplies,Office supplies and stationery
-EMP001,2024-01-17,250.00,travel,Hotel accommodation NYC
-EMP004,2024-01-17,32.50,meals,Team dinner
-EMP002,2024-01-18,150.00,training,Online course subscription
-EMP005,2024-01-18,75.00,software,Monthly SaaS license
-EMP003,2024-01-19,200.00,equipment,External monitor
