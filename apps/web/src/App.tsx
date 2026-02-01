@@ -13,13 +13,15 @@ const FILE_TYPE_LABELS: Record<FileType, string> = {
 
 interface ProcessedFile {
   key: string;
-  fileId: string;
-  partner: string;
-  fileType: FileType;
-  totalRecords: number;
-  processedRecords: number;
-  failedRecords: number;
-  completedAt: string;
+  size: number;
+  uploaded: string;           // R2 upload timestamp
+  fileId?: string;
+  partner?: string;
+  fileType?: FileType;
+  totalRecords?: number;
+  processedRecords?: number;
+  failedRecords?: number;
+  completedAt?: string;       // Workflow completion timestamp
 }
 
 function App() {
@@ -67,35 +69,44 @@ function App() {
           <p className="no-uploads">No processed files yet.</p>
         ) : (
           <ul className="uploads-list">
-            {files.map((f, i) => (
-              <li key={i} className="upload-item">
-                <div className="upload-item-info">
-                  <div className="upload-item-header">
-                    <span className="upload-item-name">{f.key.split('/').pop()}</span>
-                    {f.fileType && (
-                      <span className={`file-type-badge file-type-${f.fileType}`}>
-                        {FILE_TYPE_LABELS[f.fileType] || f.fileType}
-                      </span>
+            {files.map((f, i) => {
+              const filename = f.key.split('/').pop() || f.key;
+              const uploadDate = f.uploaded ? new Date(f.uploaded).toLocaleString() : '-';
+              const processedDate = f.completedAt ? new Date(f.completedAt).toLocaleString() : uploadDate;
+              const status = f.failedRecords && f.failedRecords > 0
+                ? `${f.failedRecords} errors`
+                : f.totalRecords !== undefined ? 'Success' : 'Completed';
+
+              return (
+                <li key={i} className="upload-item">
+                  <div className="upload-item-info">
+                    <div className="upload-item-header">
+                      <span className="upload-item-name">{filename}</span>
+                      {f.fileType && (
+                        <span className={`file-type-badge file-type-${f.fileType}`}>
+                          {FILE_TYPE_LABELS[f.fileType] || f.fileType}
+                        </span>
+                      )}
+                    </div>
+                    <div className="upload-item-meta">
+                      <span>Uploaded: {uploadDate}</span>
+                      <span>Processed: {processedDate}</span>
+                      {f.totalRecords !== undefined && <span>{f.totalRecords} rows</span>}
+                    </div>
+                  </div>
+                  <div className="upload-item-actions">
+                    {f.failedRecords && f.failedRecords > 0 ? (
+                      <>
+                        <span className="upload-item-status completed-with-errors">{status}</span>
+                        <button className="download-errors-btn" onClick={() => downloadErrors(f)}>↓ Errors</button>
+                      </>
+                    ) : (
+                      <span className="upload-item-status completed">{status}</span>
                     )}
                   </div>
-                  <div className="upload-item-meta">
-                    <span>{f.partner}</span>
-                    <span>{f.totalRecords} rows</span>
-                    <span>{new Date(f.completedAt).toLocaleString()}</span>
-                  </div>
-                </div>
-                <div className="upload-item-actions">
-                  {f.failedRecords > 0 ? (
-                    <>
-                      <span className="upload-item-status completed-with-errors">{f.failedRecords} errors</span>
-                      <button className="download-errors-btn" onClick={() => downloadErrors(f)}>↓ Errors</button>
-                    </>
-                  ) : (
-                    <span className="upload-item-status completed">Success</span>
-                  )}
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
