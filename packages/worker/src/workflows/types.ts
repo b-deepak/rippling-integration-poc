@@ -1,3 +1,6 @@
+// Import FieldDefinition for fieldTypes
+import type { FieldDefinition } from '../validation/types';
+
 // File types supported by the system
 export type FileType = 'time-attendance' | 'expenses' | 'payroll' | 'employees';
 
@@ -12,12 +15,12 @@ export interface WorkflowParams {
 }
 
 // Generic record type for CSV data
-export type Record = { [key: string]: string };
+export type CSVRecord = { [key: string]: string };
 
 // Result of processing records through the API
 export interface ProcessResult {
-  processed: Record[];
-  failed: { record: Record; error: string }[];
+  processed: CSVRecord[];
+  failed: { record: CSVRecord; error: string }[];
 }
 
 // Schema definition for file type validation
@@ -25,6 +28,7 @@ export interface FileSchema {
   fileType: FileType;
   requiredFields: string[];
   optionalFields?: string[];
+  fieldTypes?: Record<string, FieldDefinition>;
 }
 
 // Workflow result returned after completion

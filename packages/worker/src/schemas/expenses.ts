@@ -1,4 +1,36 @@
 import type { FileSchema } from '../workflows/types';
+import type { FieldDefinition } from '../validation/types';
+
+/**
+ * Field type definitions for expense records
+ */
+const fieldTypes: Record<string, FieldDefinition> = {
+  id: { type: 'string', required: true },
+  worker_id: { type: 'string', required: true },
+  amount: { type: 'decimal', required: true, min: 0 },
+  currency: { type: 'currency', required: true },
+  expense_date: { type: 'date', required: true },
+  category: { type: 'string', required: true },
+  description: { type: 'string', required: true },
+  merchant: { type: 'string', required: false },
+  receipt_url: { type: 'url', required: false },
+  project_id: { type: 'string', required: false },
+  department_id: { type: 'string', required: false },
+  reimbursable: { type: 'boolean', required: false },
+  status: {
+    type: 'enum',
+    required: false,
+    enumValues: ['PENDING', 'APPROVED', 'REJECTED', 'REIMBURSED'],
+  },
+  approved_by: { type: 'string', required: false },
+  approved_at: { type: 'datetime', required: false },
+  payment_method: {
+    type: 'enum',
+    required: false,
+    enumValues: ['CARD', 'CASH', 'TRANSFER', 'CHECK'],
+  },
+  notes: { type: 'string', required: false },
+};
 
 /**
  * Expenses schema for Rippling Spend Management
@@ -29,4 +61,5 @@ export const expensesSchema: FileSchema = {
     'payment_method',        // CARD, CASH, etc.
     'notes',                 // Additional notes
   ],
+  fieldTypes,
 };

@@ -71,8 +71,9 @@ function App() {
           <ul className="uploads-list">
             {files.map((f, i) => {
               const filename = f.key.split('/').pop() || f.key;
-              const uploadDate = f.uploaded ? new Date(f.uploaded).toLocaleString() : '-';
-              const processedDate = f.completedAt ? new Date(f.completedAt).toLocaleString() : uploadDate;
+              const uploadDate = f.uploaded ? new Date(f.uploaded).toLocaleString() : null;
+              const processedDate = f.completedAt ? new Date(f.completedAt).toLocaleString() : null;
+              const displayDate = processedDate || uploadDate || 'Unknown';
               const status = f.failedRecords && f.failedRecords > 0
                 ? `${f.failedRecords} errors`
                 : f.totalRecords !== undefined ? 'Success' : 'Completed';
@@ -89,9 +90,8 @@ function App() {
                       )}
                     </div>
                     <div className="upload-item-meta">
-                      <span>Uploaded: {uploadDate}</span>
-                      <span>Processed: {processedDate}</span>
                       {f.totalRecords !== undefined && <span>{f.totalRecords} rows</span>}
+                      <span>{displayDate}</span>
                     </div>
                   </div>
                   <div className="upload-item-actions">

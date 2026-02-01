@@ -1,4 +1,41 @@
 import type { FileSchema } from '../workflows/types';
+import type { FieldDefinition } from '../validation/types';
+
+/**
+ * Field type definitions for employee records
+ */
+const fieldTypes: Record<string, FieldDefinition> = {
+  id: { type: 'string', required: true },
+  work_email: { type: 'email', required: true },
+  start_date: { type: 'date', required: true },
+  status: {
+    type: 'enum',
+    required: true,
+    enumValues: ['INIT', 'HIRED', 'ACCEPTED', 'ACTIVE', 'TERMINATED', 'ON_LEAVE'],
+  },
+  department_id: { type: 'string', required: true },
+  title: { type: 'string', required: true },
+  user_id: { type: 'string', required: false },
+  personal_email: { type: 'email', required: false },
+  end_date: { type: 'date', required: false },
+  manager_id: { type: 'string', required: false },
+  legal_entity_id: { type: 'string', required: false },
+  country: { type: 'string', required: false, minLength: 2, maxLength: 2 },
+  employment_type_id: { type: 'string', required: false },
+  gender: {
+    type: 'enum',
+    required: false,
+    enumValues: ['MALE', 'FEMALE', 'NONBINARY', 'PREFER_NOT_TO_SAY'],
+  },
+  date_of_birth: { type: 'date', required: false },
+  level_id: { type: 'string', required: false },
+  compensation_id: { type: 'string', required: false },
+  overtime_exemption: {
+    type: 'enum',
+    required: false,
+    enumValues: ['EXEMPT', 'NON_EXEMPT'],
+  },
+};
 
 /**
  * Employees schema based on Rippling Worker API
@@ -28,4 +65,5 @@ export const employeesSchema: FileSchema = {
     'compensation_id',       // Compensation package ID
     'overtime_exemption',    // EXEMPT or NON_EXEMPT
   ],
+  fieldTypes,
 };

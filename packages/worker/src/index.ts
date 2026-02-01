@@ -146,7 +146,7 @@ app.get('/api/files', async (c) => {
         return {
           key: obj.key,
           size: obj.size,
-          uploaded: obj.uploaded,
+          uploaded: obj.uploaded.toISOString(),
           ...parsed,
         };
       })
@@ -156,6 +156,9 @@ app.get('/api/files', async (c) => {
     if (fileType && !partner) {
       files = files.filter((f) => f.fileType === fileType);
     }
+
+    // Sort by uploaded date descending (newest first)
+    files.sort((a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime());
 
     return c.json({ files, count: files.length });
   } catch (error) {

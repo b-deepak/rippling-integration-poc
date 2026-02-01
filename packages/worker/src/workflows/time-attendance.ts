@@ -1,7 +1,8 @@
 import { WorkflowStep } from 'cloudflare:workers';
-import { BaseFileWorkflow } from './base';
-import type { FileSchema, Record } from './types';
+import { BaseFileWorkflow, TransformResult } from './base';
+import type { FileSchema } from './types';
 import { timeAttendanceSchema } from '../schemas/time-attendance';
+import { validateBatch } from '../validation/validators';
 import { parseCSV } from './utils';
 
 /**
@@ -18,14 +19,20 @@ export class TimeAttendanceWorkflow extends BaseFileWorkflow {
   }
 
   /**
-   * Override transform to calculate hours worked from start_time and end_time.
-   * Expects ISO 8601 datetime format.
+   * Override transform to:
+   * 1. Validate field types
+   * 2. Calculate hours worked from start_time and end_time for valid records
    */
-  protected async transformStep(step: WorkflowStep, content: string): Promise<Record[]> {
+  protected async transformStep(step: WorkflowStep, content: string): Promise<TransformResult> {
     return step.do('transform', async () => {
-      const records = parseCSV(content);
+      const allRecords = parseCSV(content);
+      const schema = this.getSchema();
 
-      return records.map(record => {
+      // Validate field types
+      const validationResult = validateBatch(allRecords, schema.fieldTypes ?? {});
+
+      // Transform valid records - calculate hours worked
+      const transformedRecords = validationResult.validRecords.map(record => {
         let hoursWorked = 0;
         try {
           const start = new Date(record.start_time);
@@ -40,6 +47,14 @@ export class TimeAttendanceWorkflow extends BaseFileWorkflow {
           hours_worked: String(hoursWorked),
         };
       });
+
+      return {
+        records: transformedRecords,
+        validationResult: {
+          validRecords: transformedRecords,
+          invalidRecords: validationResult.invalidRecords,
+        },
+      };
     });
   }
 }
