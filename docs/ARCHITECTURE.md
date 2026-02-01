@@ -264,14 +264,81 @@ Delays: 0s → 5s → 15s → 30s → 60s (max)
 | Deployment | Wrangler CLI | 4.x | Cloudflare deployment tool |
 | Monorepo | pnpm workspaces | - | Multi-package management |
 
-### File Schemas (Based on Rippling APIs)
+### File Schemas (Mapped to Rippling APIs)
 
-| File Type | Source API | Required Fields |
-|-----------|------------|-----------------|
-| time-attendance | TimeEntry API | id, worker_id, start_time, end_time |
-| expenses | Spend Management | id, worker_id, amount, currency, expense_date, category, description |
-| payroll | Compensation API | id, worker_id, payment_type, annual_compensation, currency |
-| employees | Worker API | id, work_email, start_date, status, department_id, title |
+| File Type | Rippling Domain | API Endpoint | Required Fields |
+|-----------|-----------------|--------------|-----------------|
+| time-attendance | Time & Attendance | `POST /time_entries` | id, worker_id, start_time, end_time |
+| expenses | Spend Management | `POST /expenses` | id, worker_id, amount, currency, expense_date, category, description |
+| payroll | Compensation | `POST /compensations` | id, worker_id, payment_type, annual_compensation, currency |
+| employees | Workforce | `POST /workers` | id, work_email, start_date, status, department_id, title |
+
+### Rippling API Reference
+
+| File Type | Rippling API Docs | Domain Model |
+|-----------|-------------------|--------------|
+| **time-attendance** | [TimeEntry API](https://developer.rippling.com/docs/rippling-api/1cda7ca54d58e-create-a-time-entry) | TimeEntry - clock in/out records with optional break tracking |
+| **expenses** | [Spend Management](https://developer.rippling.com/docs/rippling-api/spend-management) | Expense - employee expense submissions with receipts |
+| **payroll** | [Compensation API](https://developer.rippling.com/docs/rippling-api/d13ad7b5c56af-get-a-compensation) | Compensation - salary/hourly wage and bonus information |
+| **employees** | [Worker API](https://developer.rippling.com/docs/rippling-api/dda97f8f9322b-get-a-worker) | Worker - employee profile, department, employment details |
+
+### Schema Field Mapping
+
+**time-attendance → TimeEntry**
+```
+CSV Field        → Rippling API Field
+─────────────────────────────────────
+id               → externalId (custom identifier)
+worker_id        → workerId (Rippling worker UUID)
+start_time       → startTime (ISO 8601 datetime)
+end_time         → endTime (ISO 8601 datetime)
+break_minutes    → breakDuration (in minutes)
+job_code_id      → jobCodeId (optional)
+comments         → notes (optional)
+```
+
+**expenses → Expense**
+```
+CSV Field        → Rippling API Field
+─────────────────────────────────────
+id               → externalId
+worker_id        → workerId
+amount           → amount (decimal)
+currency         → currency (ISO 4217: USD, EUR)
+expense_date     → expenseDate (YYYY-MM-DD)
+category         → category (travel, meals, supplies, etc.)
+description      → description
+merchant         → merchantName (optional)
+receipt_url      → receiptUrl (optional)
+```
+
+**payroll → Compensation**
+```
+CSV Field              → Rippling API Field
+───────────────────────────────────────────
+id                     → externalId
+worker_id              → workerId
+payment_type           → paymentType (SALARY, HOURLY)
+annual_compensation    → annualCompensation (decimal)
+currency               → currency (ISO 4217)
+hourly_wage            → hourlyWage (if HOURLY)
+target_annual_bonus    → targetAnnualBonus (optional)
+salary_effective_date  → effectiveDate (YYYY-MM-DD)
+```
+
+**employees → Worker**
+```
+CSV Field        → Rippling API Field
+─────────────────────────────────────
+id               → externalId
+work_email       → workEmail (required, unique)
+start_date       → startDate (YYYY-MM-DD)
+status           → status (ACTIVE, TERMINATED, ON_LEAVE)
+department_id    → departmentId (Rippling dept UUID)
+title            → jobTitle
+manager_id       → managerId (optional)
+employment_type  → employmentType (FULL_TIME, PART_TIME, CONTRACTOR)
+```
 
 ---
 
