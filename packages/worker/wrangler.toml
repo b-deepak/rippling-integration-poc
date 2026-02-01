@@ -1,0 +1,32 @@
+name = "sftp-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "sftp-files"
+preview_bucket_name = "sftp-files-preview"
+
+[[workflows]]
+name = "time-attendance-workflow"
+binding = "TIME_ATTENDANCE_WORKFLOW"
+class_name = "TimeAttendanceWorkflow"
+
+[[workflows]]
+name = "expenses-workflow"
+binding = "EXPENSES_WORKFLOW"
+class_name = "ExpensesWorkflow"
+
+[[workflows]]
+name = "payroll-workflow"
+binding = "PAYROLL_WORKFLOW"
+class_name = "PayrollWorkflow"
+
+[[workflows]]
+name = "employees-workflow"
+binding = "EMPLOYEES_WORKFLOW"
+class_name = "EmployeesWorkflow"
+
+[dev]
+port = 8787

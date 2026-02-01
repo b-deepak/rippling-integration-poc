@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+*.local
+
+# Environment & secrets
+.env
+.env.*
+*.env
+.dev.vars*
+wrangler.toml.local
+
+# API tokens & credentials
+*token*
+*secret*
+*credential*
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Test outputs
+coverage/
+
+# Large test files
+large-test*.csv
+sample-data.csv
+
+# API specs (if sensitive)
+api_spec*.yaml
