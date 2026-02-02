@@ -1,4 +1,4 @@
-import type { Record } from './types';
+import type { CSVRecord } from './types';
 
 // Retry configuration for workflow steps
 export const RETRY_CONFIG = {
@@ -9,18 +9,18 @@ export const RETRY_CONFIG = {
 /**
  * Parse CSV content into an array of records
  */
-export function parseCSV(content: string): Record[] {
+export function parseCSV(content: string): CSVRecord[] {
   const lines = content.trim().split('\n');
   if (lines.length < 2) return [];
 
   const headers = lines[0].split(',').map(h => h.trim());
-  const records: Record[] = [];
+  const records: CSVRecord[] = [];
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
     const values = line.split(',').map(v => v.trim());
-    const record: Record = {};
+    const record: CSVRecord = {};
     for (let j = 0; j < headers.length; j++) {
       record[headers[j]] = values[j] || '';
     }
@@ -91,7 +91,7 @@ export function calculateHours(clockIn: string, clockOut: string): number {
  * Validate a record against a schema
  */
 export function validateRecord(
-  record: Record,
+  record: CSVRecord,
   requiredFields: string[]
 ): { valid: boolean; missing: string[] } {
   const missing = requiredFields.filter(

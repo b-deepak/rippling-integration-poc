@@ -1,0 +1,26 @@
+id,work_email,start_date,status,department_id,title,manager_id,personal_email,country,gender
+W001,john.smith@acme.com,2024-01-15,ACTIVE,D001,Software Engineer,W010,john@personal.com,US,MALE
+W002,jane.doe@acme.com,2024-01-16,ACTIVE,D002,Marketing Manager,W011,jane@personal.com,US,FEMALE
+W003,bob.wilson@acme.com,2024-02-01,ACTIVE,D003,Sales Rep,W012,bob@personal.com,US,MALE
+W004,alice.johnson@acme.com,2024-02-15,ACTIVE,D001,Senior Engineer,W010,alice@personal.com,CA,FEMALE
+W005,charlie.brown@acme.com,2024-03-01,ACTIVE,D004,Finance Analyst,W013,charlie@personal.com,US,MALE
+W006,diana.lee@acme.com,2024-03-15,ACTIVE,D005,HR Specialist,W014,diana@personal.com,US,FEMALE
+W007,edward.garcia@acme.com,2024-04-01,ACTIVE,D001,DevOps Engineer,W010,edward@personal.com,MX,MALE
+W008,fiona.martinez@acme.com,2024-04-15,ACTIVE,D002,Content Writer,W011,fiona@personal.com,US,FEMALE
+W009,george.anderson@acme.com,2024-05-01,ACTIVE,D003,Account Executive,W012,george@personal.com,US,MALE
+W010,helen.taylor@acme.com,2023-01-01,ACTIVE,D001,Engineering Manager,,helen@personal.com,US,FEMALE
+W011,ivan.thomas@acme.com,2023-01-01,ACTIVE,D002,Marketing Director,,ivan@personal.com,US,MALE
+W012,julia.jackson@acme.com,2023-01-01,ACTIVE,D003,Sales Director,,julia@personal.com,US,FEMALE
+W013,kevin.white@acme.com,2023-01-01,ACTIVE,D004,Finance Director,,kevin@personal.com,US,MALE
+W014,laura.harris@acme.com,2023-01-01,ACTIVE,D005,HR Director,,laura@personal.com,US,FEMALE
+W015,michael.martin@acme.com,2024-05-15,ACTIVE,D001,QA Engineer,W010,michael@personal.com,US,MALE
+W016,nancy.thompson@acme.com,2024-06-01,ACTIVE,D004,Accountant,W013,nancy@personal.com,US,FEMALE
+W017,oscar.robinson@acme.com,2024-06-15,ACTIVE,D005,Recruiter,W014,oscar@personal.com,US,MALE
+W018,patricia.clark@acme.com,2024-07-01,ACTIVE,D002,Social Media Manager,W011,patricia@personal.com,US,FEMALE
+W019,quinn.rodriguez@acme.com,2024-07-15,ACTIVE,D003,Sales Rep,W012,quinn@personal.com,US,NONBINARY
+W020,rachel.lewis@acme.com,2024-08-01,ACTIVE,D001,Backend Developer,W010,rachel@personal.com,GB,FEMALE
+W021,steven.walker@acme.com,2024-08-15,ACTIVE,D004,Financial Analyst,W013,steven@personal.com,US,MALE
+W022,teresa.hall@acme.com,2024-09-01,ACTIVE,D005,Benefits Specialist,W014,teresa@personal.com,US,FEMALE
+W023,ulysses.allen@acme.com,2024-09-15,ACTIVE,D002,Brand Manager,W011,ulysses@personal.com,US,MALE
+W024,victoria.young@acme.com,2024-10-01,TERMINATED,D003,Sales Rep,W012,victoria@personal.com,US,FEMALE
+W025,william.king@acme.com,2024-10-15,ACTIVE,D001,Frontend Developer,W010,william@personal.com,AU,MALE

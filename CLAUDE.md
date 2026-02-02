@@ -47,11 +47,30 @@ User Upload → Worker (validation) → R2 /incoming/ → Workflow → Partner A
 
 ### Workflow Steps (Durable Execution)
 
-1. **validate** - Check file has data rows, update status
+1. **validate** - Check file has data rows, validate headers match schema
 2. **stage** - Move from `incoming/` to `staging/`
-3. **transform** - Parse CSV to records, set total count
+3. **transform** - Parse CSV, validate field types, apply transformations
 4. **process** - Call partner API per record with retry (3x exponential backoff)
 5. **finalize** - Move to `processed/`, write errors to `errors/`, update final status
+
+### Field Type Validation
+
+Records are validated against schema-defined field types in the transform step. Invalid records are marked as failed but don't stop the batch.
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| `string` | Any non-empty | `"hello"` |
+| `integer` | `/^-?\d+$/` | `"42"`, `"-5"` |
+| `decimal` | `/^-?\d+(\.\d+)?$/` | `"123.45"` |
+| `date` | `YYYY-MM-DD` | `"2024-01-15"` |
+| `datetime` | ISO 8601 | `"2024-01-15T09:00:00Z"` |
+| `email` | RFC 5322 simplified | `"user@example.com"` |
+| `currency` | ISO 4217 (3 letters) | `"USD"`, `"EUR"` |
+| `enum` | From predefined list | `"SALARY"`, `"HOURLY"` |
+| `boolean` | true/false, yes/no, 1/0 | `"true"` |
+| `url` | HTTP(S) URL | `"https://example.com"` |
+
+Field definitions in `packages/worker/src/schemas/*.ts` support constraints: `required`, `min`, `max`, `minLength`, `maxLength`, `enumValues`.
 
 ### R2 Storage Hierarchy
 
@@ -66,11 +85,12 @@ bucket/
 ### Key Files
 
 - `packages/worker/src/index.ts` - API routes (upload, status, errors)
-- `packages/worker/src/workflows/file-processing.ts` - Durable workflow
-- `packages/worker/src/services/stream-validator.ts` - Fast CSV validation
-- `packages/worker/src/types.ts` - Shared TypeScript interfaces
-- `packages/worker/wrangler.toml` - Cloudflare bindings (R2, D1, Workflows)
-- `packages/worker/schema.sql` - D1 database schema
+- `packages/worker/src/workflows/base.ts` - Base workflow class with validation integration
+- `packages/worker/src/workflows/time-attendance.ts` - Time attendance workflow (calculates hours)
+- `packages/worker/src/schemas/*.ts` - Schema definitions with field types
+- `packages/worker/src/validation/` - Field type validation module
+- `packages/worker/src/services/stream-validator.ts` - Fast CSV upload validation
+- `packages/worker/wrangler.toml` - Cloudflare bindings (R2, Workflows)
 
 ### Status Flow
 

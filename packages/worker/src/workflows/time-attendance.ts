@@ -1,12 +1,13 @@
 import { WorkflowStep } from 'cloudflare:workers';
-import { BaseFileWorkflow } from './base';
-import type { FileSchema, Record } from './types';
+import { BaseFileWorkflow, TransformResult } from './base';
+import type { FileSchema } from './types';
 import { timeAttendanceSchema } from '../schemas/time-attendance';
-import { parseCSV, calculateHours } from './utils';
+import { validateBatch } from '../validation/validators';
+import { parseCSV } from './utils';
 
 /**
- * Time Attendance workflow - processes employee clock-in/out records.
- * Overrides transformStep to calculate hours worked.
+ * Time Attendance workflow - processes time entry records.
+ * Overrides transformStep to calculate hours worked from start_time/end_time.
  */
 export class TimeAttendanceWorkflow extends BaseFileWorkflow {
   protected getSchema(): FileSchema {
@@ -14,20 +15,46 @@ export class TimeAttendanceWorkflow extends BaseFileWorkflow {
   }
 
   protected getApiEndpoint(): string {
-    return '/api/time-attendance';
+    return '/api/time-entries';
   }
 
   /**
-   * Override transform to calculate hours worked from clock_in and clock_out.
+   * Override transform to:
+   * 1. Validate field types
+   * 2. Calculate hours worked from start_time and end_time for valid records
    */
-  protected async transformStep(step: WorkflowStep, content: string): Promise<Record[]> {
+  protected async transformStep(step: WorkflowStep, content: string): Promise<TransformResult> {
     return step.do('transform', async () => {
-      const records = parseCSV(content);
+      const allRecords = parseCSV(content);
+      const schema = this.getSchema();
 
-      return records.map(record => ({
-        ...record,
-        hours_worked: String(calculateHours(record.clock_in, record.clock_out)),
-      }));
+      // Validate field types
+      const validationResult = validateBatch(allRecords, schema.fieldTypes ?? {});
+
+      // Transform valid records - calculate hours worked
+      const transformedRecords = validationResult.validRecords.map(record => {
+        let hoursWorked = 0;
+        try {
+          const start = new Date(record.start_time);
+          const end = new Date(record.end_time);
+          const diffMs = end.getTime() - start.getTime();
+          hoursWorked = Math.round((diffMs / (1000 * 60 * 60)) * 100) / 100;
+        } catch {
+          // If parsing fails, leave as 0
+        }
+        return {
+          ...record,
+          hours_worked: String(hoursWorked),
+        };
+      });
+
+      return {
+        records: transformedRecords,
+        validationResult: {
+          validRecords: transformedRecords,
+          invalidRecords: validationResult.invalidRecords,
+        },
+      };
     });
   }
 }

@@ -1,6 +1,16 @@
 import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from 'cloudflare:workers';
-import type { WorkflowParams, Record, ProcessResult, FileSchema, WorkflowResult, WorkflowEnv } from './types';
+import type { WorkflowParams, CSVRecord, ProcessResult, FileSchema, WorkflowResult, WorkflowEnv } from './types';
+import type { BatchValidationResult } from '../validation/types';
+import { validateBatch } from '../validation/validators';
 import { RETRY_CONFIG, parseCSV } from './utils';
+
+/**
+ * Result of transform step including validation
+ */
+export interface TransformResult {
+  records: CSVRecord[];
+  validationResult: BatchValidationResult;
+}
 
 /**
  * Abstract base class for file processing workflows.
@@ -20,16 +30,33 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
     // Step 2: Stage - move from incoming to staging
     await this.stageStep(step, params, content);
 
-    // Step 3: Transform - parse CSV and apply transformations
-    const records = await this.transformStep(step, content);
+    // Step 3: Transform - parse CSV, validate field types, apply transformations
+    const { records, validationResult } = await this.transformStep(step, content);
 
-    // Step 4: Process - send records to API
+    // Step 4: Process - send valid records to API
     const result = await this.processStep(step, records, params);
 
-    // Step 5: Finalize - move to processed, write errors
-    await this.finalizeStep(step, params, records, result);
+    // Merge validation failures with API failures
+    const allFailed = [
+      ...validationResult.invalidRecords.map(({ record, errors }) => ({
+        record,
+        error: errors.map(e => e.message).join('; '),
+      })),
+      ...result.failed,
+    ];
 
-    return this.buildResult(params, records, result);
+    const mergedResult: ProcessResult = {
+      processed: result.processed,
+      failed: allFailed,
+    };
+
+    // Total records = valid processed + all failed (validation + API)
+    const totalRecords = records.length + validationResult.invalidRecords.length;
+
+    // Step 5: Finalize - move to processed, write errors
+    await this.finalizeStep(step, params, totalRecords, mergedResult);
+
+    return this.buildResult(params, totalRecords, mergedResult);
   }
 
   // ========================================
@@ -97,11 +124,25 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
   }
 
   /**
-   * Transform step - parse CSV to records.
+   * Transform step - parse CSV to records and validate field types.
    * Override to apply custom transformations (e.g., calculate hours).
    */
-  protected async transformStep(step: WorkflowStep, content: string): Promise<Record[]> {
-    return step.do('transform', async () => parseCSV(content));
+  protected async transformStep(step: WorkflowStep, content: string): Promise<TransformResult> {
+    return step.do('transform', async () => {
+      const allRecords = parseCSV(content);
+      const schema = this.getSchema();
+
+      if (schema.fieldTypes) {
+        const validationResult = validateBatch(allRecords, schema.fieldTypes);
+        return { records: validationResult.validRecords, validationResult };
+      }
+
+      // Backward compatibility: no fieldTypes = all valid
+      return {
+        records: allRecords,
+        validationResult: { validRecords: allRecords, invalidRecords: [] },
+      };
+    });
   }
 
   /**
@@ -110,12 +151,12 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
    */
   protected async processStep(
     step: WorkflowStep,
-    records: Record[],
+    records: CSVRecord[],
     params: WorkflowParams
   ): Promise<ProcessResult> {
     return step.do('process', { timeout: '25 minutes' }, async () => {
-      const processed: Record[] = [];
-      const failed: { record: Record; error: string }[] = [];
+      const processed: CSVRecord[] = [];
+      const failed: { record: CSVRecord; error: string }[] = [];
 
       for (const record of records) {
         // Simulate API call - log and mark as processed
@@ -140,7 +181,7 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
   protected async finalizeStep(
     step: WorkflowStep,
     params: WorkflowParams,
-    records: Record[],
+    totalRecords: number,
     result: ProcessResult
   ): Promise<void> {
     await step.do('finalize', RETRY_CONFIG, async () => {
@@ -151,7 +192,7 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
           fileId: params.fileId,
           partner: params.partner,
           fileType: params.fileType,
-          totalRecords: records.length,
+          totalRecords,
           processedRecords: result.processed.length,
           failedRecords: result.failed.length,
           completedAt: new Date().toISOString(),
@@ -179,7 +220,7 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
    */
   protected buildResult(
     params: WorkflowParams,
-    records: Record[],
+    totalRecords: number,
     result: ProcessResult
   ): WorkflowResult {
     return {
@@ -187,7 +228,7 @@ export abstract class BaseFileWorkflow extends WorkflowEntrypoint<WorkflowEnv, W
       path: params.path,
       partner: params.partner,
       fileType: params.fileType,
-      total: records.length,
+      total: totalRecords,
       processed: result.processed.length,
       failed: result.failed.length,
     };
